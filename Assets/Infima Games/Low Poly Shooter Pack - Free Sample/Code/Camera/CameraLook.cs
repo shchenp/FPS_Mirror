@@ -1,5 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
@@ -7,11 +8,14 @@ namespace InfimaGames.LowPolyShooterPack
     /// <summary>
     /// Camera Look. Handles the rotation of the camera.
     /// </summary>
-    public class CameraLook : MonoBehaviour
+    public class CameraLook : NetworkBehaviour
     {
         #region FIELDS SERIALIZED
         
         [Header("Settings")]
+        
+        [SerializeField]
+        private CharacterBehaviour playerCharacter;
         
         [Tooltip("Sensitivity when looking around.")]
         [SerializeField]
@@ -32,11 +36,6 @@ namespace InfimaGames.LowPolyShooterPack
         #endregion
         
         #region FIELDS
-        
-        /// <summary>
-        /// Player Character.
-        /// </summary>
-        private CharacterBehaviour playerCharacter;
         /// <summary>
         /// The player character's rigidbody component.
         /// </summary>
@@ -57,12 +56,10 @@ namespace InfimaGames.LowPolyShooterPack
 
         private void Awake()
         {
-            //Get Player Character.
-            playerCharacter = ServiceLocator.Current.Get<IGameModeService>().GetPlayerCharacter();
             //Cache the rigidbody.
             playerCharacterRigidbody = playerCharacter.GetComponent<Rigidbody>();
         }
-        private void Start()
+        public override void OnStartLocalPlayer()
         {
             //Cache the character's initial rotation.
             rotationCharacter = playerCharacter.transform.localRotation;
@@ -71,6 +68,11 @@ namespace InfimaGames.LowPolyShooterPack
         }
         private void LateUpdate()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+            
             //Frame Input. The Input to add this frame!
             Vector2 frameInput = playerCharacter.IsCursorLocked() ? playerCharacter.GetInputLook() : default;
             //Sensitivity.

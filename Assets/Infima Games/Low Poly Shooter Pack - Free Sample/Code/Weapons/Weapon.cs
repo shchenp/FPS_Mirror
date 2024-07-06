@@ -1,5 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
@@ -233,6 +234,8 @@ namespace InfimaGames.LowPolyShooterPack
                 
             //Spawn projectile from the projectile spawn point.
             GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
+            
+            NetworkServer.Spawn(projectile);
             //Add velocity to the projectile.
             projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse;   
         }

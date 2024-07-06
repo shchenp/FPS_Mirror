@@ -1,10 +1,11 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
 {
-    public abstract class WeaponBehaviour : MonoBehaviour
+    public abstract class WeaponBehaviour : NetworkBehaviour
     {
         #region UNITY
 

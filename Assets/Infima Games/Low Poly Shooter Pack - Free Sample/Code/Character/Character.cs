@@ -187,6 +187,12 @@ namespace InfimaGames.LowPolyShooterPack
 			//Refresh!
 			RefreshWeaponSetup();
 		}
+
+		public override void OnStartLocalPlayer()
+		{
+			cameraWorld.depth = 5;
+		}
+
 		protected override void Start()
 		{
 			//Cache a reference to the holster layer's index.
@@ -199,6 +205,11 @@ namespace InfimaGames.LowPolyShooterPack
 
 		protected override void Update()
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
+			
 			//Match Aim.
 			aiming = holdingButtonAim && CanAim();
 			//Match Run.
@@ -222,6 +233,10 @@ namespace InfimaGames.LowPolyShooterPack
 
 		protected override void LateUpdate()
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
 			//We need a weapon for this!
 			if (equippedWeapon == null)
 				return;

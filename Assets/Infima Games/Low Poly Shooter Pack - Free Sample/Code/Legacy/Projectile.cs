@@ -2,9 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using InfimaGames.LowPolyShooterPack;
+using Mirror;
 using Random = UnityEngine.Random;
 
-public class Projectile : MonoBehaviour {
+public class Projectile : NetworkBehaviour {
 
 	[Range(5, 100)]
 	[Tooltip("After how long time should the bullet prefab be destroyed?")]
@@ -21,6 +22,11 @@ public class Projectile : MonoBehaviour {
 	public Transform [] metalImpactPrefabs;
 	public Transform [] dirtImpactPrefabs;
 	public Transform []	concreteImpactPrefabs;
+	
+	public override void OnStartServer()
+	{
+		Invoke(nameof(DestroySelf), destroyAfter);
+	}
 
 	private void Start ()
 	{
@@ -28,12 +34,10 @@ public class Projectile : MonoBehaviour {
 		var gameModeService = ServiceLocator.Current.Get<IGameModeService>();
 		//Ignore the main player character's collision. A little hacky, but it should work.
 		Physics.IgnoreCollision(gameModeService.GetPlayerCharacter().GetComponent<Collider>(), GetComponent<Collider>());
-		
-		//Start destroy timer
-		StartCoroutine (DestroyAfter ());
 	}
 
 	//If the bullet collides with anything
+	[ServerCallback]
 	private void OnCollisionEnter (Collision collision)
 	{
 		//Ignore collisions with other projectiles.
@@ -63,7 +67,7 @@ public class Projectile : MonoBehaviour {
 		//Otherwise, destroy bullet on impact
 		else 
 		{
-			Destroy (gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "Blood" tag
@@ -74,7 +78,7 @@ public class Projectile : MonoBehaviour {
 				(0, bloodImpactPrefabs.Length)], transform.position, 
 				Quaternion.LookRotation (collision.contacts [0].normal));
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "Metal" tag
@@ -85,7 +89,7 @@ public class Projectile : MonoBehaviour {
 				(0, bloodImpactPrefabs.Length)], transform.position, 
 				Quaternion.LookRotation (collision.contacts [0].normal));
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "Dirt" tag
@@ -96,7 +100,7 @@ public class Projectile : MonoBehaviour {
 				(0, bloodImpactPrefabs.Length)], transform.position, 
 				Quaternion.LookRotation (collision.contacts [0].normal));
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "Concrete" tag
@@ -107,7 +111,7 @@ public class Projectile : MonoBehaviour {
 				(0, bloodImpactPrefabs.Length)], transform.position, 
 				Quaternion.LookRotation (collision.contacts [0].normal));
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "Target" tag
@@ -117,7 +121,7 @@ public class Projectile : MonoBehaviour {
 			collision.transform.gameObject.GetComponent
 				<TargetScript>().isHit = true;
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 			
 		//If bullet collides with "ExplosiveBarrel" tag
@@ -127,7 +131,7 @@ public class Projectile : MonoBehaviour {
 			collision.transform.gameObject.GetComponent
 				<ExplosiveBarrelScript>().explode = true;
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 
 		//If bullet collides with "GasTank" tag
@@ -137,24 +141,24 @@ public class Projectile : MonoBehaviour {
 			collision.transform.gameObject.GetComponent
 				<GasTankScript> ().isHit = true;
 			//Destroy bullet object
-			Destroy(gameObject);
+			NetworkServer.Destroy(gameObject);
 		}
 	}
 
+	[Server]
 	private IEnumerator DestroyTimer () 
 	{
 		//Wait random time based on min and max values
 		yield return new WaitForSeconds
 			(Random.Range(minDestroyTime, maxDestroyTime));
 		//Destroy bullet object
-		Destroy(gameObject);
+		NetworkServer.Destroy(gameObject);
 	}
 
-	private IEnumerator DestroyAfter () 
+	// destroy for everyone on the server
+	[Server]
+	void DestroySelf()
 	{
-		//Wait for set amount of time
-		yield return new WaitForSeconds (destroyAfter);
-		//Destroy bullet object
-		Destroy (gameObject);
+		NetworkServer.Destroy(gameObject);
 	}
 }

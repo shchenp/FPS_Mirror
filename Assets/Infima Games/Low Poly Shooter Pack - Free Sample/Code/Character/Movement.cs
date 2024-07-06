@@ -1,12 +1,13 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
 using System.Linq;
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
 {
     [RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
-    public class Movement : MovementBehaviour
+    public class Movement : NetworkBehaviour
     {
         #region FIELDS SERIALIZED
 
@@ -66,6 +67,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Player Character.
         /// </summary>
+        [SerializeField]
         private CharacterBehaviour playerCharacter;
         /// <summary>
         /// The player character's equipped weapon.
@@ -81,17 +83,8 @@ namespace InfimaGames.LowPolyShooterPack
 
         #region UNITY FUNCTIONS
 
-        /// <summary>
-        /// Awake.
-        /// </summary>
-        protected override void Awake()
-        {
-            //Get Player Character.
-            playerCharacter = ServiceLocator.Current.Get<IGameModeService>().GetPlayerCharacter();
-        }
-
         /// Initializes the FpsController on start.
-        protected override  void Start()
+        private void Start()
         {
             //Rigidbody Setup.
             rigidBody = GetComponent<Rigidbody>();
@@ -131,23 +124,29 @@ namespace InfimaGames.LowPolyShooterPack
             grounded = true;
         }
 			
-        protected override void FixedUpdate()
+        private void FixedUpdate()
         {
-            //Move.
-            MoveCharacter();
+            if (isLocalPlayer)
+            {
+                //Move.
+                MoveCharacter();
             
-            //Unground.
-            grounded = false;
+                //Unground.
+                grounded = false;   
+            }
         }
 
         /// Moves the camera to the character, processes jumping and plays sounds every frame.
-        protected override  void Update()
+        private void Update()
         {
-            //Get the equipped weapon!
-            equippedWeapon = playerCharacter.GetInventory().GetEquipped();
+            if (isLocalPlayer)
+            {
+                //Get the equipped weapon!
+                equippedWeapon = playerCharacter.GetInventory().GetEquipped();
             
-            //Play Sounds!
-            PlayFootstepSounds();
+                //Play Sounds!
+                PlayFootstepSounds();   
+            }
         }
 
         #endregion

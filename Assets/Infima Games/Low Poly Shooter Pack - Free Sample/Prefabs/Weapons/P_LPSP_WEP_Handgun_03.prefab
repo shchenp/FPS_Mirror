@@ -76,7 +76,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   automatic: 0
-  projectileImpulse: 400
+  projectileImpulse: 100
   roundsPerMinutes: 500
   mask:
     serializedVersion: 2

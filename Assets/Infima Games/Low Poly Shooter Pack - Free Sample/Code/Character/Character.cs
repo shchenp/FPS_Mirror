@@ -3,6 +3,7 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using Mirror;
 using UnityEngine.InputSystem;
 
 namespace InfimaGames.LowPolyShooterPack
@@ -51,19 +52,23 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// True if the character is aiming.
 		/// </summary>
+		[SyncVar]
 		private bool aiming;
 		/// <summary>
 		/// True if the character is running.
 		/// </summary>
+		[SyncVar]
 		private bool running;
 		/// <summary>
 		/// True if the character has its weapon holstered.
 		/// </summary>
+		[SyncVar]
 		private bool holstered;
 		
 		/// <summary>
 		/// Last Time.time at which we shot.
 		/// </summary>
+		[SyncVar]
 		private float lastShotTime;
 		
 		/// <summary>
@@ -105,16 +110,22 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// True if the character is reloading.
 		/// </summary>
+		[SyncVar]
+		[SerializeField]
 		private bool reloading;
 		
 		/// <summary>
 		/// True if the character is inspecting its weapon.
 		/// </summary>
+		[SyncVar]
+		[SerializeField]
 		private bool inspecting;
 
 		/// <summary>
 		/// True if the character is in the middle of holstering a weapon.
 		/// </summary>
+		[SyncVar]
+		[SerializeField]
 		private bool holstering;
 
 		/// <summary>
@@ -137,6 +148,8 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// True if the player is holding the firing button.
 		/// </summary>
+		[SyncVar]
+		[SerializeField]
 		private bool holdingButtonFire;
 
 		/// <summary>
@@ -147,6 +160,8 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// True if the game cursor is locked! Used when pressing "Escape" to allow developers to more easily access the editor.
 		/// </summary>
+		[SyncVar]
+		[SerializeField]
 		private bool cursorLocked;
 
 		#endregion
@@ -205,7 +220,7 @@ namespace InfimaGames.LowPolyShooterPack
 
 		protected override void Update()
 		{
-			if (!isLocalPlayer)
+			if (!isServer)
 			{
 				return;
 			}
@@ -310,6 +325,7 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// Fires the character's weapon.
 		/// </summary>
+		[Server]
 		private void Fire()
 		{
 			//Save the shot time, so we can calculate the fire rate correctly.
@@ -576,51 +592,66 @@ namespace InfimaGames.LowPolyShooterPack
 		/// </summary>
 		public void OnTryFire(InputAction.CallbackContext context)
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
 			//Block while the cursor is unlocked.
 			if (!cursorLocked)
 				return;
 
 			//Switch.
-			switch (context)
+			switch (context.phase)
 			{
 				//Started.
-				case {phase: InputActionPhase.Started}:
+				case InputActionPhase.Started:
 					//Hold.
 					holdingButtonFire = true;
 					break;
 				//Performed.
-				case {phase: InputActionPhase.Performed}:
-					//Ignore if we're not allowed to actually fire.
-					if (!CanPlayAnimationFire())
-						break;
-					
-					//Check.
-					if (equippedWeapon.HasAmmunition())
-					{
-						//Check.
-						if (equippedWeapon.IsAutomatic())
-							break;
-							
-						//Has fire rate passed.
-						if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
-							Fire();
-					}
-					//Fire Empty.
-					else
-						FireEmpty();
+				case InputActionPhase.Performed:
+					Cmd_TryFire();
 					break;
 				//Canceled.
-				case {phase: InputActionPhase.Canceled}:
+				case InputActionPhase.Canceled:
 					//Stop Hold.
 					holdingButtonFire = false;
 					break;
 			}
+		}
+
+		[Command]
+		private void Cmd_TryFire()
+		{
+			//Ignore if we're not allowed to actually fire.
+			if (!CanPlayAnimationFire())
+				return;
+					
+			//Check.
+			if (equippedWeapon.HasAmmunition())
+			{
+				//Check.
+				if (equippedWeapon.IsAutomatic())
+					return;
+							
+				//Has fire rate passed.
+				if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
+					Fire();
+			}
+			//Fire Empty.
+			else
+				FireEmpty();
 		}
 		/// <summary>
 		/// Reload.
 		/// </summary>
 		public void OnTryPlayReload(InputAction.CallbackContext context)
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
+
 			//Block while the cursor is unlocked.
 			if (!cursorLocked)
 				return;
@@ -771,6 +802,10 @@ namespace InfimaGames.LowPolyShooterPack
 		
 		public void OnLockCursor(InputAction.CallbackContext context)
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
 			//Switch.
 			switch (context)
 			{

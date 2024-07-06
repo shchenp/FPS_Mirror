@@ -202,15 +202,22 @@ namespace InfimaGames.LowPolyShooterPack
             //Play Reload Animation.
             animator.Play(HasAmmunition() ? "Reload" : "Reload Empty", 0, 0.0f);
         }
+        [Server]
         public override void Fire(float spreadMultiplier = 1.0f)
         {
             //We need a muzzle in order to fire this weapon!
             if (muzzleBehaviour == null)
+            {
+                Debug.LogError("muzzleBehaviour == null");
                 return;
+            }
             
             //Make sure that we have a camera cached, otherwise we don't really have the ability to perform traces.
             if (playerCamera == null)
+            {
+                Debug.LogError("playerCamera == null");
                 return;
+            }
 
             //Get Muzzle Socket. This is the point we fire from.
             Transform muzzleSocket = muzzleBehaviour.GetSocket();
@@ -235,9 +242,10 @@ namespace InfimaGames.LowPolyShooterPack
             //Spawn projectile from the projectile spawn point.
             GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
             
-            NetworkServer.Spawn(projectile);
             //Add velocity to the projectile.
-            projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse;   
+            projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse; 
+            
+            NetworkServer.Spawn(projectile);  
         }
 
         public override void FillAmmunition(int amount)

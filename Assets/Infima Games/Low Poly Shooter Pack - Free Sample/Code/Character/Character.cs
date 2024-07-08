@@ -171,19 +171,21 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// Aiming Alpha Value.
 		/// </summary>
-		private static readonly int HashAimingAlpha = Animator.StringToHash("Aiming");
+		private readonly int HashAimingAlpha = Animator.StringToHash("Aiming");
 
 		/// <summary>
 		/// Hashed "Movement".
 		/// </summary>
-		private static readonly int HashMovement = Animator.StringToHash("Movement");
+		private readonly int HashMovement = Animator.StringToHash("Movement");
 
 		#endregion
 
 		#region UNITY
 
-		protected override void Awake()
+		public override void OnStartLocalPlayer()
 		{
+			// Awake
+			
 			#region Lock Cursor
 
 			//Always make sure that our cursor is locked when the game starts!
@@ -201,15 +203,11 @@ namespace InfimaGames.LowPolyShooterPack
 
 			//Refresh!
 			RefreshWeaponSetup();
-		}
-
-		public override void OnStartLocalPlayer()
-		{
+			
 			cameraWorld.depth = 5;
-		}
-
-		protected override void Start()
-		{
+			
+			// Start
+			
 			//Cache a reference to the holster layer's index.
 			layerHolster = characterAnimator.GetLayerIndex("Layer Holster");
 			//Cache a reference to the action layer's index.
@@ -220,7 +218,7 @@ namespace InfimaGames.LowPolyShooterPack
 
 		protected override void Update()
 		{
-			if (!isServer)
+			if (!isLocalPlayer)
 			{
 				return;
 			}
@@ -238,7 +236,7 @@ namespace InfimaGames.LowPolyShooterPack
 				{
 					//Has fire rate passed.
 					if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
-						Fire();
+						CmdFire();
 				}	
 			}
 
@@ -296,6 +294,11 @@ namespace InfimaGames.LowPolyShooterPack
 		/// </summary>
 		private void UpdateAnimator()
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
+			
 			//Movement Value. This value affects absolute movement. Aiming movement uses this, as opposed to per-axis movement.
 			characterAnimator.SetFloat(HashMovement, Mathf.Clamp01(Mathf.Abs(axisMovement.x) + Mathf.Abs(axisMovement.y)), dampTimeLocomotion, Time.deltaTime);
 			
@@ -325,9 +328,14 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// Fires the character's weapon.
 		/// </summary>
-		[Server]
-		private void Fire()
+		[Command]
+		private void CmdFire()
 		{
+			if (!isLocalPlayer)
+			{
+				return;
+			}
+			
 			//Save the shot time, so we can calculate the fire rate correctly.
 			lastShotTime = Time.time;
 			//Fire the weapon! Make sure that we also pass the scope's spread multiplier if we're aiming.
@@ -610,7 +618,7 @@ namespace InfimaGames.LowPolyShooterPack
 					break;
 				//Performed.
 				case InputActionPhase.Performed:
-					Cmd_TryFire();
+					CmdTryFire();
 					break;
 				//Canceled.
 				case InputActionPhase.Canceled:
@@ -621,7 +629,7 @@ namespace InfimaGames.LowPolyShooterPack
 		}
 
 		[Command]
-		private void Cmd_TryFire()
+		private void CmdTryFire()
 		{
 			//Ignore if we're not allowed to actually fire.
 			if (!CanPlayAnimationFire())
@@ -636,7 +644,7 @@ namespace InfimaGames.LowPolyShooterPack
 							
 				//Has fire rate passed.
 				if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
-					Fire();
+					CmdFire();
 			}
 			//Fire Empty.
 			else

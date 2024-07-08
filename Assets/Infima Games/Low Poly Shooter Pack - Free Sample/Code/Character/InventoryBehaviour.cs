@@ -1,5 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
@@ -7,7 +8,7 @@ namespace InfimaGames.LowPolyShooterPack
     /// <summary>
     /// Abstract Inventory Class. Helpful so you can implement your own inventory system!
     /// </summary>
-    public abstract class InventoryBehaviour : MonoBehaviour
+    public abstract class InventoryBehaviour : NetworkBehaviour
     {
         #region GETTERS
 
@@ -42,7 +43,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// </summary>
         /// <param name="equippedAtStart">Inventory index of the weapon we want to equip when the game starts.</param>
         public abstract void Init(int equippedAtStart = 0);
-        
+
         /// <summary>
         /// Equips a Weapon.
         /// </summary>

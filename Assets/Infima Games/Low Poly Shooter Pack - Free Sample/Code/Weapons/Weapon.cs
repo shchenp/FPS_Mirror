@@ -132,9 +132,10 @@ namespace InfimaGames.LowPolyShooterPack
         #endregion
 
         #region UNITY
-        
-        protected override void Awake()
+
+        public override void OnStartLocalPlayer()
         {
+            // Awake
             //Get Animator.
             animator = GetComponent<Animator>();
             //Get Attachment Manager.
@@ -146,9 +147,8 @@ namespace InfimaGames.LowPolyShooterPack
             characterBehaviour = gameModeService.GetPlayerCharacter();
             //Cache the world camera. We use this in line traces.
             playerCamera = characterBehaviour.GetCameraWorld().transform;
-        }
-        protected override void Start()
-        {
+            
+            // Start
             #region Cache Attachment References
             
             //Get Magazine.

@@ -1,5 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
@@ -38,7 +39,7 @@ namespace InfimaGames.LowPolyShooterPack
             //Equip.
             Equip(equippedAtStart);
         }
-
+        
         public override WeaponBehaviour Equip(int index)
         {
             //If we have no weapons, we can't really equip anything.

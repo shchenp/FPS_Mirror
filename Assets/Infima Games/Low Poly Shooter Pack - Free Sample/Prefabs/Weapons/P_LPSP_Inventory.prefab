@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2480563158121336328}
   - component: {fileID: 2480563158121336331}
+  - component: {fileID: 3826585873884879329}
   m_Layer: 0
   m_Name: P_LPSP_Inventory
   m_TagString: Untagged
@@ -46,6 +47,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3c368290cc3e914ab3a0cf540de2166, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &3826585873884879329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2480563158121336329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2238962156
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1001 &307701425529467137
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -389,7 +410,8 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -6901247346884210251, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -493,7 +515,8 @@ PrefabInstance:
       propertyPath: muzzleIndex
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7364984610464369109, guid: 464d2b315a1ed6b408948cc2fc04e8f7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

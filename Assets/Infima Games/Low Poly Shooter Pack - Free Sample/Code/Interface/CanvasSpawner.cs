@@ -1,5 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
+using Mirror;
 using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack.Interface
@@ -7,7 +8,7 @@ namespace InfimaGames.LowPolyShooterPack.Interface
     /// <summary>
     /// Player Interface.
     /// </summary>
-    public class CanvasSpawner : MonoBehaviour
+    public class CanvasSpawner : NetworkBehaviour
     {
         #region FIELDS SERIALIZED
 
@@ -21,10 +22,7 @@ namespace InfimaGames.LowPolyShooterPack.Interface
 
         #region UNITY FUNCTIONS
 
-        /// <summary>
-        /// Awake.
-        /// </summary>
-        private void Awake()
+        public override void OnStartLocalPlayer()
         {
             //Spawn Interface.
             Instantiate(canvasPrefab);

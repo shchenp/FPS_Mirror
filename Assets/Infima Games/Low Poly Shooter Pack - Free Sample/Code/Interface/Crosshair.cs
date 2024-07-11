@@ -42,12 +42,9 @@ namespace InfimaGames.LowPolyShooterPack.Interface
         #endregion
         
         #region UNITY
-        
-        protected override void Awake()
-        {
-            //Base.
-            base.Awake();
 
+        private void Awake()
+        {
             //Cache Rect Transform.
             rectTransform = GetComponent<RectTransform>();
         }

@@ -11,12 +11,15 @@ namespace InfimaGames.LowPolyShooterPack.Interface
     public class CanvasSpawner : NetworkBehaviour
     {
         #region FIELDS SERIALIZED
-
+        
         [Header("Settings")]
         
         [Tooltip("Canvas prefab spawned at start. Displays the player's user interface.")]
         [SerializeField]
-        private GameObject canvasPrefab;
+        private CanvasManager _canvasPrefab;
+
+        [SerializeField] 
+        private CharacterBehaviour _player;
 
         #endregion
 
@@ -25,7 +28,8 @@ namespace InfimaGames.LowPolyShooterPack.Interface
         public override void OnStartLocalPlayer()
         {
             //Spawn Interface.
-            Instantiate(canvasPrefab);
+            var canvas = Instantiate(_canvasPrefab);
+            canvas.Initialize(_player);
         }
 
         #endregion

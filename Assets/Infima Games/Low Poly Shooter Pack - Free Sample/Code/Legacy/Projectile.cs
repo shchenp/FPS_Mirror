@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
-using InfimaGames.LowPolyShooterPack;
 using Mirror;
 using Random = UnityEngine.Random;
 
@@ -26,14 +24,6 @@ public class Projectile : NetworkBehaviour {
 	public override void OnStartServer()
 	{
 		Invoke(nameof(DestroySelf), destroyAfter);
-	}
-
-	private void Start ()
-	{
-		//Grab the game mode service, we need it to access the player character!
-		var gameModeService = ServiceLocator.Current.Get<IGameModeService>();
-		//Ignore the main player character's collision. A little hacky, but it should work.
-		Physics.IgnoreCollision(gameModeService.GetPlayerCharacter().GetComponent<Collider>(), GetComponent<Collider>());
 	}
 
 	//If the bullet collides with anything

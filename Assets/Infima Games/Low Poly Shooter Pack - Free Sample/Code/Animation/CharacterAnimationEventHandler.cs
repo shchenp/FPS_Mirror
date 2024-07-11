@@ -1,13 +1,13 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
-using UnityEngine;
+using Mirror;
 
 namespace InfimaGames.LowPolyShooterPack
 {
 	/// <summary>
 	/// Handles all the animation events that come from the character in the asset.
 	/// </summary>
-	public class CharacterAnimationEventHandler : MonoBehaviour
+	public class CharacterAnimationEventHandler : NetworkBehaviour
 	{
 		#region FIELDS
 
@@ -23,7 +23,7 @@ namespace InfimaGames.LowPolyShooterPack
 		private void Awake()
 		{
 			//Grab a reference to the character component.
-			playerCharacter = ServiceLocator.Current.Get<IGameModeService>().GetPlayerCharacter();
+			playerCharacter = GetComponentInParent<CharacterBehaviour>();
 		}
 
 		#endregion

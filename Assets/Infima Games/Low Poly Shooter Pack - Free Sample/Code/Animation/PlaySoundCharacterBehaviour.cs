@@ -62,17 +62,16 @@ namespace InfimaGames.LowPolyShooterPack
         #endregion
         
         #region UNITY
-
         /// <summary>
         /// On State Enter.
         /// </summary>
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             //We need to get the character component.
-            playerCharacter ??= ServiceLocator.Current.Get<IGameModeService>().GetPlayerCharacter();
+            var character = animator.GetComponentInParent<CharacterBehaviour>();
 
             //Get Inventory.
-            playerInventory ??= playerCharacter.GetInventory();
+            playerInventory ??= character.GetInventory();
 
             //Try to get the equipped weapon's Weapon component.
             if (!(playerInventory.GetEquipped() is { } weaponBehaviour))

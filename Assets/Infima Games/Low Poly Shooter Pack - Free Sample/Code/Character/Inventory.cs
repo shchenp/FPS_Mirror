@@ -56,17 +56,29 @@ namespace InfimaGames.LowPolyShooterPack
             
             //Disable the currently equipped weapon, if we have one.
             if (equipped != null)
-                equipped.gameObject.SetActive(false);
+                DisableWeapon();
 
             //Update index.
             equippedIndex = index;
             //Update equipped.
             equipped = weapons[equippedIndex];
             //Activate the newly-equipped weapon.
-            equipped.gameObject.SetActive(true);
+            EnableWeapon();
 
             //Return.
             return equipped;
+        }
+        
+        // Метод для включения оружия
+        private void EnableWeapon()
+        {
+            equipped.gameObject.SetActive(true);
+        }
+
+        // Метод для отключения оружия
+        private void DisableWeapon()
+        {
+            equipped.gameObject.SetActive(false);
         }
         
         #endregion

@@ -24,11 +24,8 @@ namespace InfimaGames.LowPolyShooterPack.Interface
 
         #region UNITY
 
-        protected override void Awake()
+        private void Awake()
         {
-            //Base.
-            base.Awake();
-
             //Enable the prompt by default.
             prompt.enabled = true;
             //Disable the tutorial by default.

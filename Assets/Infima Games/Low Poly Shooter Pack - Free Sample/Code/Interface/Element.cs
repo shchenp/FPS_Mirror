@@ -1,20 +1,16 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
-using UnityEngine;
+using Mirror;
+using VContainer;
 
 namespace InfimaGames.LowPolyShooterPack.Interface
 {
     /// <summary>
     /// Interface Element.
     /// </summary>
-    public abstract class Element : MonoBehaviour
+    public abstract class Element : NetworkBehaviour
     {
         #region FIELDS
-        
-        /// <summary>
-        /// Game Mode Service.
-        /// </summary>
-        protected IGameModeService gameModeService;
         
         /// <summary>
         /// Player Character.
@@ -35,20 +31,6 @@ namespace InfimaGames.LowPolyShooterPack.Interface
         #region UNITY
 
         /// <summary>
-        /// Awake.
-        /// </summary>
-        protected virtual void Awake()
-        {
-            //Get Game Mode Service. Very useful to get Game Mode references.
-            gameModeService = ServiceLocator.Current.Get<IGameModeService>();
-            
-            //Get Player Character.
-            playerCharacter = gameModeService.GetPlayerCharacter();
-            //Get Player Character Inventory.
-            playerCharacterInventory = playerCharacter.GetInventory();
-        }
-        
-        /// <summary>
         /// Update.
         /// </summary>
         private void Update()
@@ -67,6 +49,12 @@ namespace InfimaGames.LowPolyShooterPack.Interface
         #endregion
 
         #region METHODS
+        
+        public void Initialize(CharacterBehaviour player)
+        {
+            playerCharacter = player;
+            playerCharacterInventory = playerCharacter.GetInventory();
+        }
 
         /// <summary>
         /// Tick.

@@ -58,14 +58,12 @@ namespace InfimaGames.LowPolyShooterPack
         {
             //Cache the rigidbody.
             playerCharacterRigidbody = playerCharacter.GetComponent<Rigidbody>();
-        }
-        public override void OnStartLocalPlayer()
-        {
             //Cache the character's initial rotation.
             rotationCharacter = playerCharacter.transform.localRotation;
             //Cache the camera's initial rotation.
             rotationCamera = transform.localRotation;
         }
+        
         private void LateUpdate()
         {
             if (!isLocalPlayer)

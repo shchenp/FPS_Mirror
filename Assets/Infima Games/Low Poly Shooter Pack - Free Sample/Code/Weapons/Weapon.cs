@@ -114,11 +114,7 @@ namespace InfimaGames.LowPolyShooterPack
         private MuzzleBehaviour muzzleBehaviour;
 
         #endregion
-
-        /// <summary>
-        /// The GameModeService used in this game!
-        /// </summary>
-        private IGameModeService gameModeService;
+        
         /// <summary>
         /// The main player character behaviour component.
         /// </summary>
@@ -132,22 +128,23 @@ namespace InfimaGames.LowPolyShooterPack
         #endregion
 
         #region UNITY
-
-        public override void OnStartLocalPlayer()
+        
+        protected override void Awake()
         {
             // Awake
             //Get Animator.
             animator = GetComponent<Animator>();
             //Get Attachment Manager.
             attachmentManager = GetComponent<WeaponAttachmentManagerBehaviour>();
-
-            //Cache the game mode service. We only need this right here, but we'll cache it in case we ever need it again.
-            gameModeService = ServiceLocator.Current.Get<IGameModeService>();
-            //Cache the player character.
-            characterBehaviour = gameModeService.GetPlayerCharacter();
+            
+            characterBehaviour = GetComponentInParent<CharacterBehaviour>();
+            
             //Cache the world camera. We use this in line traces.
             playerCamera = characterBehaviour.GetCameraWorld().transform;
-            
+        }
+
+        protected override void Start()
+        {
             // Start
             #region Cache Attachment References
             
@@ -202,7 +199,7 @@ namespace InfimaGames.LowPolyShooterPack
             //Play Reload Animation.
             animator.Play(HasAmmunition() ? "Reload" : "Reload Empty", 0, 0.0f);
         }
-        [Server]
+        
         public override void Fire(float spreadMultiplier = 1.0f)
         {
             //We need a muzzle in order to fire this weapon!
@@ -238,14 +235,20 @@ namespace InfimaGames.LowPolyShooterPack
             if (Physics.Raycast(new Ray(playerCamera.position, playerCamera.forward),
                 out RaycastHit hit, maximumDistance, mask))
                 rotation = Quaternion.LookRotation(hit.point - muzzleSocket.position);
-                
+
+            SpawnProjectile(muzzleSocket.position, rotation);
+        }
+
+        [Server]
+        private void SpawnProjectile(Vector3 position, Quaternion rotation)
+        {
             //Spawn projectile from the projectile spawn point.
-            GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
+            GameObject projectile = Instantiate(prefabProjectile, position, rotation);
             
             //Add velocity to the projectile.
             projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse; 
             
-            NetworkServer.Spawn(projectile);  
+            NetworkServer.Spawn(projectile); 
         }
 
         public override void FillAmmunition(int amount)

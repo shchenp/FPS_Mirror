@@ -140,10 +140,12 @@ namespace InfimaGames.LowPolyShooterPack
 		/// <summary>
 		/// True if the player is holding the aiming button.
 		/// </summary>
+		[SyncVar]
 		private bool holdingButtonAim;
 		/// <summary>
 		/// True if the player is holding the running button.
 		/// </summary>
+		[SyncVar]
 		private bool holdingButtonRun;
 		/// <summary>
 		/// True if the player is holding the firing button.
@@ -194,7 +196,16 @@ namespace InfimaGames.LowPolyShooterPack
 			UpdateCursorState();
 
 			#endregion
+			
+			cameraWorld.depth = 5;
+			
+			// Start
+			
+			
+		}
 
+		protected override void Awake()
+		{
 			//Cache the CharacterKinematics component.
 			characterKinematics = GetComponent<CharacterKinematics>();
 
@@ -203,10 +214,6 @@ namespace InfimaGames.LowPolyShooterPack
 
 			//Refresh!
 			RefreshWeaponSetup();
-			
-			cameraWorld.depth = 5;
-			
-			// Start
 			
 			//Cache a reference to the holster layer's index.
 			layerHolster = characterAnimator.GetLayerIndex("Layer Holster");
@@ -331,11 +338,6 @@ namespace InfimaGames.LowPolyShooterPack
 		[Command]
 		private void CmdFire()
 		{
-			if (!isLocalPlayer)
-			{
-				return;
-			}
-			
 			//Save the shot time, so we can calculate the fire rate correctly.
 			lastShotTime = Time.time;
 			//Fire the weapon! Make sure that we also pass the scope's spread multiplier if we're aiming.

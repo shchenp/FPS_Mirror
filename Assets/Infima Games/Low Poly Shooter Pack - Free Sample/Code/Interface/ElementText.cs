@@ -22,11 +22,8 @@ namespace InfimaGames.LowPolyShooterPack.Interface
 
         #region UNITY
 
-        protected override void Awake()
+        private void Awake()
         {
-            //Base.
-            base.Awake();
-
             //Get Text Mesh.
             textMesh = GetComponent<TextMeshProUGUI>();
         }

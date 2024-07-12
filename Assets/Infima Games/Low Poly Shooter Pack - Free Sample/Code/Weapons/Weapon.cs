@@ -100,6 +100,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Amount of ammunition left.
         /// </summary>
+        [SyncVar]
         private int ammunitionCurrent;
 
         #region Attachment Behaviours

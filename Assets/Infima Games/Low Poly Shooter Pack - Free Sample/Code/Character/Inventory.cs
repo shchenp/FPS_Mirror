@@ -1,12 +1,14 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
 using Mirror;
-using UnityEngine;
+using UnityEngine.Events;
 
 namespace InfimaGames.LowPolyShooterPack
 {
     public class Inventory : InventoryBehaviour
     {
+        public UnityEvent OnWeaponChanged;
+        
         #region FIELDS
         
         /// <summary>
@@ -21,6 +23,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Currently equipped index.
         /// </summary>
+        [SyncVar(hook = nameof(WeaponChanged))]
         private int equippedIndex = -1;
 
         #endregion
@@ -38,47 +41,81 @@ namespace InfimaGames.LowPolyShooterPack
 
             //Equip.
             Equip(equippedAtStart);
+            
+            WeaponChanged(equippedIndex, equippedAtStart);
         }
         
-        public override WeaponBehaviour Equip(int index)
+        protected override void Equip(int index)
         {
             //If we have no weapons, we can't really equip anything.
             if (weapons == null)
-                return equipped;
+                return;
             
             //The index needs to be within the array's bounds.
             if (index > weapons.Length - 1)
-                return equipped;
+                return;
 
             //No point in allowing equipping the already-equipped weapon.
             if (equippedIndex == index)
-                return equipped;
-            
-            //Disable the currently equipped weapon, if we have one.
-            if (equipped != null)
-                DisableWeapon();
+                return;
 
             //Update index.
             equippedIndex = index;
+            
             //Update equipped.
             equipped = weapons[equippedIndex];
-            //Activate the newly-equipped weapon.
-            EnableWeapon();
+        }
+        
+        [Server]
+        public override void ServerEquip(int index)
+        {
+            //If we have no weapons, we can't really equip anything.
+            if (weapons == null)
+                return;
+            
+            //The index needs to be within the array's bounds.
+            if (index > weapons.Length - 1)
+                return;
 
-            //Return.
-            return equipped;
+            //No point in allowing equipping the already-equipped weapon.
+            if (equippedIndex == index)
+                return;
+
+            //Update index.
+            equippedIndex = index;
+        }
+
+        private void WeaponChanged(int oldWeaponIndex, int newWeaponIndex)
+        {
+            //Disable the currently equipped weapon, if we have one.
+            if (equipped != null)
+                DisableWeapon(oldWeaponIndex);
+            
+            //Activate the newly-equipped weapon.
+            EnableWeapon(newWeaponIndex);
+            
+            //Update equipped.
+            equipped = weapons[newWeaponIndex];
+
+            InvokeCallback();
+        }
+
+        [Command(requiresAuthority = false)]
+        private void InvokeCallback()
+        {
+            OnWeaponChanged?.Invoke();
         }
         
         // Метод для включения оружия
-        private void EnableWeapon()
+        private void EnableWeapon(int index)
         {
-            equipped.gameObject.SetActive(true);
+            weapons[index].gameObject.SetActive(true);
         }
 
         // Метод для отключения оружия
-        private void DisableWeapon()
+        private void DisableWeapon(int index)
         {
-            equipped.gameObject.SetActive(false);
+            weapons[index].gameObject.SetActive(false);
         }
         
         #endregion

@@ -137,15 +137,13 @@ namespace InfimaGames.LowPolyShooterPack
             animator = GetComponent<Animator>();
             //Get Attachment Manager.
             attachmentManager = GetComponent<WeaponAttachmentManagerBehaviour>();
+            attachmentManager.Initialize();
             
             characterBehaviour = GetComponentInParent<CharacterBehaviour>();
             
             //Cache the world camera. We use this in line traces.
             playerCamera = characterBehaviour.GetCameraWorld().transform;
-        }
-
-        protected override void Start()
-        {
+            
             // Start
             #region Cache Attachment References
             

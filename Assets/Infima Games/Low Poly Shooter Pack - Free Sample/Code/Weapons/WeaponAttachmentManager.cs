@@ -65,7 +65,7 @@ namespace InfimaGames.LowPolyShooterPack
         /// <summary>
         /// Awake.
         /// </summary>
-        protected override void Awake()
+        public override void Initialize()
         {
             //Check if we have no scope. This could happen if we have an incorrect index.
             if (scopeBehaviour == null)

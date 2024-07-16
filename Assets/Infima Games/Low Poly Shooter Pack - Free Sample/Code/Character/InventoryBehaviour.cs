@@ -1,7 +1,6 @@
 ﻿// Copyright 2021, Infima Games. All Rights Reserved.
 
 using Mirror;
-using UnityEngine;
 
 namespace InfimaGames.LowPolyShooterPack
 {
@@ -49,7 +48,13 @@ namespace InfimaGames.LowPolyShooterPack
         /// </summary>
         /// <param name="index">Index of the weapon to equip.</param>
         /// <returns>Weapon that was just equipped.</returns>
-        public abstract WeaponBehaviour Equip(int index);
+        protected abstract void Equip(int index);
+
+        [Server]
+        public virtual void ServerEquip(int index)
+        {
+            
+        }
 
         #endregion
     }

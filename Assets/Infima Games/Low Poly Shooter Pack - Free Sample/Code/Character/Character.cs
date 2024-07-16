@@ -198,12 +198,8 @@ namespace InfimaGames.LowPolyShooterPack
 			#endregion
 			
 			cameraWorld.depth = 5;
-			
-			// Start
-			
-			
 		}
-
+		
 		protected override void Awake()
 		{
 			//Cache the CharacterKinematics component.
@@ -385,9 +381,13 @@ namespace InfimaGames.LowPolyShooterPack
 			characterAnimator.Play("Unholster", layerHolster, 0);
 			
 			//Equip The New Weapon.
-			inventory.Equip(index);
-			//Refresh.
-			RefreshWeaponSetup();
+			CmdEquipNextWeapon(index);
+		}
+
+		[Command]
+		private void CmdEquipNextWeapon(int index)
+		{
+			inventory.ServerEquip(index);
 		}
 
 		/// <summary>
@@ -411,6 +411,12 @@ namespace InfimaGames.LowPolyShooterPack
 			equippedWeaponScope = weaponAttachmentManager.GetEquippedScope();
 			//Get equipped magazine. We need this one for its settings!
 			equippedWeaponMagazine = weaponAttachmentManager.GetEquippedMagazine();
+		}
+
+		[ClientRpc]
+		public void RpcRefreshWeaponSetup()
+		{
+			RefreshWeaponSetup();
 		}
 
 		private void FireEmpty()
@@ -620,7 +626,7 @@ namespace InfimaGames.LowPolyShooterPack
 					break;
 				//Performed.
 				case InputActionPhase.Performed:
-					CmdTryFire();
+					TryFire();
 					break;
 				//Canceled.
 				case InputActionPhase.Canceled:
@@ -629,9 +635,8 @@ namespace InfimaGames.LowPolyShooterPack
 					break;
 			}
 		}
-
-		[Command]
-		private void CmdTryFire()
+		
+		private void TryFire()
 		{
 			//Ignore if we're not allowed to actually fire.
 			if (!CanPlayAnimationFire())
